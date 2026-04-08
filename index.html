@@ -268,6 +268,37 @@
     }
     .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
     .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+    /* Live Now badge */
+    .live-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: #fff0f0; color: #c0392b; border: 1px solid #f5c6c6;
+      border-radius: 8px; font-size: 11px; font-weight: 700;
+      padding: 2px 9px; margin-left: 8px;
+      animation: pulse-live 2s infinite;
+    }
+    @keyframes pulse-live {
+      0%, 100% { opacity: 1; } 50% { opacity: 0.65; }
+    }
+    .live-dot { width: 7px; height: 7px; border-radius: 50%; background: #e74c3c; }
+    /* Dutch-required warning */
+    .lang-pill.lang-dutch-req { background: #fff3e0; color: #7a4400; }
+    /* Market insight box */
+    .insight-box {
+      margin: 0 40px 24px;
+      background: linear-gradient(135deg, #1a3c5e 0%, #1e5080 100%);
+      border-radius: 12px; padding: 20px 28px; color: white;
+    }
+    .insight-box h3 { font-size: 14px; font-weight: 700; margin-bottom: 12px; color: #f0c070; letter-spacing: 0.2px; }
+    .insight-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+    .insight-item { display: flex; gap: 12px; align-items: flex-start; }
+    .insight-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+    .insight-text { font-size: 12.5px; line-height: 1.55; color: rgba(255,255,255,0.88); }
+    .insight-text strong { color: #f0c070; font-weight: 700; }
+    /* Search date tag */
+    .refreshed-pill {
+      background: rgba(255,255,255,0.13); border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 20px; padding: 5px 14px; font-size: 13px; color: #cce8ff;
+    }
   </style>
 </head>
 <body>
@@ -281,29 +312,30 @@
     <div class="meta-pill">🌐 <strong>Language:</strong> English fluent · Dutch beginner</div>
     <div class="meta-pill">💼 <strong>Experience:</strong> 15+ years · Agency &amp; Healthcare</div>
     <div class="meta-pill">📅 <strong>Generated:</strong> April 8, 2026</div>
+    <div class="refreshed-pill">🔄 Live search refreshed April 8, 2026</div>
   </div>
 </div>
 
 <!-- ══════════ SUMMARY BAR ══════════ -->
 <div class="summary-bar">
   <div class="stat-block">
-    <div class="stat-num" id="total-count">26</div>
+    <div class="stat-num" id="total-count">30</div>
     <div class="stat-label">Total Opportunities</div>
   </div>
   <div class="divider"></div>
   <div class="stat-block">
-    <div class="stat-num" style="color:var(--green)">11</div>
+    <div class="stat-num" style="color:#c0392b">4</div>
+    <div class="stat-label">🔴 Live &amp; Verified</div>
+  </div>
+  <div class="divider"></div>
+  <div class="stat-block">
+    <div class="stat-num" style="color:var(--green)">14</div>
     <div class="stat-label">Strong Match</div>
   </div>
   <div class="divider"></div>
   <div class="stat-block">
-    <div class="stat-num" style="color:var(--yellow)">10</div>
+    <div class="stat-num" style="color:var(--yellow)">11</div>
     <div class="stat-label">Good Match</div>
-  </div>
-  <div class="divider"></div>
-  <div class="stat-block">
-    <div class="stat-num" style="color:var(--red)">5</div>
-    <div class="stat-label">Exploratory</div>
   </div>
   <div class="divider"></div>
   <div class="stat-block">
@@ -317,7 +349,7 @@
   </div>
   <div class="divider"></div>
   <div class="stat-block">
-    <div class="stat-num" style="color:var(--remote)">8</div>
+    <div class="stat-num" style="color:var(--remote)">12</div>
     <div class="stat-label">Remote / Global</div>
   </div>
 </div>
@@ -341,6 +373,31 @@
   <button class="filter-btn" onclick="filterCards('type-inhouse', this)">🏛 In-House Brand</button>
   <div class="filter-sep"></div>
   <button class="filter-btn" onclick="filterCards('loc-remote', this)">🌍 Remote / Global</button>
+  <div class="filter-sep"></div>
+  <button class="filter-btn" onclick="filterCards('live-now', this)" style="border-color:#f5c6c6; color:#c0392b;">🔴 Live Now</button>
+</div>
+
+<!-- ══════════ MARKET INTELLIGENCE ══════════ -->
+<div class="insight-box">
+  <h3>🔎 Live Market Intelligence — April 8, 2026</h3>
+  <div class="insight-grid">
+    <div class="insight-item">
+      <div class="insight-icon">🇳🇱</div>
+      <div class="insight-text"><strong>Dutch language is the #1 barrier</strong> for local agency roles. Most Amsterdam AD positions on Magnet.me, Indeed NL, and LinkedIn require Dutch fluency — even at international agencies like DEPT® and iO. English-only roles are rare at the account director level locally.</div>
+    </div>
+    <div class="insight-item">
+      <div class="insight-icon">🏥</div>
+      <div class="insight-text"><strong>Remote healthcare agencies are the strongest play.</strong> Real Chemistry, McCann Health, and Publicis Health all have verified live Account Director openings right now. Taylor's Avalere + Smith+Nephew credentials make her a top-tier candidate at all three.</div>
+    </div>
+    <div class="insight-item">
+      <div class="insight-icon">💡</div>
+      <div class="insight-text"><strong>Best short-term strategy:</strong> Apply to 2–3 verified live remote healthcare agency roles while exploring internal Avalere transfer. As Dutch improves (6–12 months), the full Amsterdam agency market opens up substantially.</div>
+    </div>
+    <div class="insight-item">
+      <div class="insight-icon">🔴</div>
+      <div class="insight-text"><strong>Cards marked "Live Now"</strong> have been individually verified as open postings as of April 8, 2026. Other cards represent strong-fit companies where openings are likely but not individually verified — use the direct career page links to check current status.</div>
+    </div>
+  </div>
 </div>
 
 <!-- ══════════ LEGEND ══════════ -->
@@ -826,6 +883,122 @@
 </div>
 <div class="grid" id="remote-grid">
 
+  <!-- LIVE-1. Real Chemistry – Account Director (Live Now) -->
+  <div class="card loc-remote type-health match-strong eng-only live-now" data-tags="type-health match-strong loc-remote eng-only live-now">
+    <div class="card-stripe"></div>
+    <div class="card-body">
+      <div style="display:flex; align-items:center; gap:0; margin-bottom:12px;">
+        <div class="match-badge match-strong" style="margin-bottom:0"><span class="match-dot"></span>Strong Match</div>
+        <span class="live-badge"><span class="live-dot"></span>LIVE NOW</span>
+      </div>
+      <div class="card-company">Real Chemistry</div>
+      <div class="card-role">Account Director – US Medical Affairs</div>
+      <div class="tags">
+        <span class="tag tag-loc-r">🌍 Remote (US-based, EU inquiry)</span>
+        <span class="tag tag-eng">English Only</span>
+        <span class="tag tag-industry">Healthcare Mktg</span>
+        <span class="tag tag-industry">Med Affairs</span>
+      </div>
+      <div class="card-desc">Verified open posting (April 2026). The Account Director on the US Medical Affairs team is the primary client contact and strategic advisor — managing relationships, driving business growth, and overseeing strategic med affairs plans. Listed as remote within US, but Real Chemistry has European offices and has been hiring internationally.</div>
+      <div class="why-box">
+        <div class="why-label">Why Taylor</div>
+        Her Avalere Health Account Director role and Smith+Nephew medical devices/biologics experience are an exact match. Real Chemistry explicitly values healthcare agency backgrounds. The key question: ask directly about EU-timezone remote eligibility given their European presence in London and Germany.
+      </div>
+      <div class="salary-row">💰 <strong>$120,000 – $142,500 USD</strong> · verified posted April 2026</div>
+    </div>
+    <div class="card-footer">
+      <span class="lang-pill lang-en">🌐 English Only</span>
+      <a class="apply-btn" href="https://job-boards.greenhouse.io/realchemistry" target="_blank">Apply at Real Chemistry →</a>
+    </div>
+  </div>
+
+  <!-- LIVE-2. Real Chemistry – Senior Account Manager, Healthcare Comms (Live Now) -->
+  <div class="card loc-remote type-health match-strong eng-only live-now" data-tags="type-health match-strong loc-remote eng-only live-now">
+    <div class="card-stripe"></div>
+    <div class="card-body">
+      <div style="display:flex; align-items:center; gap:0; margin-bottom:12px;">
+        <div class="match-badge match-strong" style="margin-bottom:0"><span class="match-dot"></span>Strong Match</div>
+        <span class="live-badge"><span class="live-dot"></span>LIVE NOW</span>
+      </div>
+      <div class="card-company">Real Chemistry</div>
+      <div class="card-role">Senior Account Manager – Healthcare Communications</div>
+      <div class="tags">
+        <span class="tag tag-loc-r">🌍 Remote (US-based, EU inquiry)</span>
+        <span class="tag tag-eng">English Only</span>
+        <span class="tag tag-industry">Healthcare Mktg</span>
+        <span class="tag tag-industry">Sci &amp; Med Affairs</span>
+      </div>
+      <div class="card-desc">Verified open posting (April 2026). The Senior Account Manager for Scientific and Medical Affairs is the client's key day-to-day contact — managing relationships, developing presentations and creative briefs, contributing to marketing strategy, and ensuring high-quality delivery. Strong step into a path to AD if already at AD level elsewhere.</div>
+      <div class="why-box">
+        <div class="why-label">Why Taylor</div>
+        Even if she's overqualified in title, this role at Real Chemistry could be a soft-landing entry point into a new agency with strong healthcare comms culture — with a clear AD promotion path within 12 months. Real Chemistry offers excellent remote flexibility and a strong healthcare portfolio.
+      </div>
+      <div class="salary-row">💰 Est. <strong>$90,000 – $115,000 USD</strong> · remote with quarterly team meetups</div>
+    </div>
+    <div class="card-footer">
+      <span class="lang-pill lang-en">🌐 English Only</span>
+      <a class="apply-btn" href="https://job-boards.greenhouse.io/realchemistry" target="_blank">Apply at Real Chemistry →</a>
+    </div>
+  </div>
+
+  <!-- LIVE-3. Razorfish Health / Publicis – Account Director, Advocacy (Live Now) -->
+  <div class="card loc-remote type-health match-strong eng-only live-now" data-tags="type-health match-strong loc-remote eng-only live-now">
+    <div class="card-stripe"></div>
+    <div class="card-body">
+      <div style="display:flex; align-items:center; gap:0; margin-bottom:12px;">
+        <div class="match-badge match-strong" style="margin-bottom:0"><span class="match-dot"></span>Strong Match</div>
+        <span class="live-badge"><span class="live-dot"></span>LIVE NOW</span>
+      </div>
+      <div class="card-company">Razorfish Health (Publicis Health)</div>
+      <div class="card-role">Account Director – Advocacy</div>
+      <div class="tags">
+        <span class="tag tag-loc-r">🌍 Remote · Multiple Locations</span>
+        <span class="tag tag-eng">English Only</span>
+        <span class="tag tag-industry">Healthcare Mktg</span>
+        <span class="tag tag-industry">Publicis Network</span>
+      </div>
+      <div class="card-desc">Verified open posting (April 2026). Razorfish Health is part of the Publicis Health network — one of the largest healthcare communications groups in the world. The Account Director, Advocacy role is listed as remote in multiple locations. Razorfish Health has a "Connect From Anywhere" (CFA) philosophy — employees choose remote, in-office, or hybrid.</div>
+      <div class="why-box">
+        <div class="why-label">Why Taylor</div>
+        Publicis Health's CFA policy makes EU-based remote work officially supported. Her deep pharma agency background (Avalere) plus advocacy-adjacent work in healthcare marketing positions her well. This is one of the most globally remote-friendly healthcare agency cultures in the sector.
+      </div>
+      <div class="salary-row">💰 Est. <strong>$100,000 – $135,000 USD</strong> · CFA remote policy · Publicis benefits</div>
+    </div>
+    <div class="card-footer">
+      <span class="lang-pill lang-en">🌐 English Only · EU Remote Supported</span>
+      <a class="apply-btn" href="https://careers.publicisgroupe.com/razorfishhealth/jobs" target="_blank">Apply at Razorfish Health →</a>
+    </div>
+  </div>
+
+  <!-- LIVE-4. Avalere Health – Associate Director, Growth (Live Now, UK-based) -->
+  <div class="card loc-remote type-health match-good eng-only live-now" data-tags="type-health match-good loc-remote eng-only live-now">
+    <div class="card-stripe"></div>
+    <div class="card-body">
+      <div style="display:flex; align-items:center; gap:0; margin-bottom:12px;">
+        <div class="match-badge match-good" style="margin-bottom:0"><span class="match-dot"></span>Good Match</div>
+        <span class="live-badge"><span class="live-dot"></span>LIVE NOW</span>
+      </div>
+      <div class="card-company">Avalere Health (Taylor's Current Employer)</div>
+      <div class="card-role">Associate Director, Growth — UK Hubs</div>
+      <div class="tags">
+        <span class="tag tag-loc-r">🇬🇧 London / Brighton (hybrid)</span>
+        <span class="tag tag-eng">English Only</span>
+        <span class="tag tag-industry">Healthcare Mktg</span>
+        <span class="tag tag-industry">Business Dev</span>
+      </div>
+      <div class="card-desc">Verified open posting (April 2026). Avalere Health's London/Brighton office is hiring an Associate Director, Growth — a business development and new business role driving revenue across global healthcare clients. Ideally commutable to London or Brighton, but Avalere's flexible culture may accommodate hybrid arrangements. Role spans Europe, APAC, and US markets.</div>
+      <div class="why-box">
+        <div class="why-label">Why Taylor</div>
+        She already knows Avalere's culture, clients, and methodology — zero onboarding friction. This is a BD-focused role (new business, pitches, RFPs) rather than pure account management, but her client relationship skills transfer directly. Could also open a conversation about a custom remote AD role given her tenure. Netherlands is 1 hour from London by air.
+      </div>
+      <div class="salary-row">💰 Est. <strong>£80,000 – £110,000 GBP</strong> · up to 7% pension · UK hybrid</div>
+    </div>
+    <div class="card-footer">
+      <span class="lang-pill lang-en">🌐 English Only · UK Hubs</span>
+      <a class="apply-btn" href="https://jobs.lever.co/avalerehealth/e6c37ada-f5f5-41e6-a073-3faac73ae542" target="_blank">Apply at Avalere →</a>
+    </div>
+  </div>
+
   <!-- R1. Avalere Health – Senior Engagement Strategist / Associate Director -->
   <div class="card loc-remote type-health match-strong eng-only" data-tags="type-health match-strong loc-remote eng-only">
     <div class="card-stripe"></div>
@@ -1100,6 +1273,15 @@
     </a>
     <a class="search-link-btn" href="https://wpp.careersitecloud.com/amsterdam" target="_blank">
       WPP Careers<br><span class="search-link-sub">Ogilvy / Grey / other WPP · AMS</span>
+    </a>
+    <a class="search-link-btn" href="https://magnet.me/en/jobs?q=account+manager+OR+account+director&location=amsterdam" target="_blank">
+      Magnet.me<br><span class="search-link-sub">Account Director/Manager · AMS</span>
+    </a>
+    <a class="search-link-btn" href="https://jobinamsterdam.com/?query=account+director+healthcare+marketing" target="_blank">
+      JobsInAmsterdam<br><span class="search-link-sub">English-only · Healthcare Mktg</span>
+    </a>
+    <a class="search-link-btn" href="https://www.pharmiweb.jobs/jobs/netherlands/" target="_blank">
+      PharmiWeb NL<br><span class="search-link-sub">Pharma/Biotech jobs · Netherlands</span>
     </a>
   </div>
   <div style="margin-top:18px; padding-top:16px; border-top:1px solid var(--border);">
