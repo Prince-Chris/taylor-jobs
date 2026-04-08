@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Taylor Prince – Job Opportunity Dashboard</title>
+  <style>
+    :root {
+      --bg: #f4f5f7;
+      --card: #ffffff;
+      --primary: #1a3c5e;
+      --accent: #e8832a;
+      --accent2: #2e86ab;
+      --green: #27ae60;
+      --yellow: #f0a500;
+      --red: #c0392b;
+      --tag-bg: #eaf1fb;
+      --tag-text: #1a3c5e;
+      --border: #e0e4ea;
+      --text: #2d3748;
+      --muted: #718096;
+      --haarlem: #7b3fa0;
+      --amsterdam: #2e86ab;
+      --remote: #0d7377;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    /* ── Header ── */
+    .header {
+      background: linear-gradient(135deg, var(--primary) 0%, #2a5a8c 100%);
+      color: white;
+      padding: 32px 40px 28px;
+    }
+    .header h1 { font-size: 26px; font-weight: 700; letter-spacing: -0.3px; }
+    .header h1 span { color: #f0c070; }
+    .header-meta { display: flex; flex-wrap: wrap; gap: 24px; margin-top: 16px; }
+    .meta-pill {
+      background: rgba(255,255,255,0.13);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: 13px;
+    }
+    .meta-pill strong { color: #f0c070; }
+    /* ── Summary Bar ── */
+    .summary-bar {
+      background: white;
+      border-bottom: 1px solid var(--border);
+      padding: 14px 40px;
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      flex-wrap: wrap;
+    }
+    .stat-block { text-align: center; }
+    .stat-num { font-size: 22px; font-weight: 700; color: var(--primary); }
+    .stat-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .divider { width: 1px; height: 36px; background: var(--border); }
+    /* ── Filters ── */
+    .filters {
+      padding: 18px 40px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .filter-label { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-right: 4px; }
+    .filter-btn {
+      padding: 6px 16px;
+      border-radius: 20px;
+      border: 1.5px solid var(--border);
+      background: white;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.15s;
+      color: var(--text);
+      font-weight: 500;
+    }
+    .filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .filter-btn.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: white;
+    }
+    .filter-sep { width: 1px; height: 28px; background: var(--border); margin: 0 4px; }
+    /* ── Cards Grid ── */
+    .grid {
+      padding: 0 40px 40px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background: var(--card);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      transition: box-shadow 0.2s, transform 0.2s;
+      display: flex;
+      flex-direction: column;
+    }
+    .card:hover { box-shadow: 0 8px 28px rgba(0,0,0,0.09); transform: translateY(-2px); }
+    .card.hidden { display: none; }
+    /* Card top stripe by location */
+    .card-stripe {
+      height: 4px;
+    }
+    .loc-haarlem .card-stripe { background: var(--haarlem); }
+    .loc-amsterdam .card-stripe { background: var(--amsterdam); }
+    .loc-both .card-stripe { background: linear-gradient(90deg, var(--haarlem) 50%, var(--amsterdam) 50%); }
+    .loc-remote .card-stripe { background: var(--remote); }
+    .card-body { padding: 20px 20px 16px; flex: 1; }
+    /* Match badge */
+    .match-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      margin-bottom: 12px;
+    }
+    .match-strong { background: #d4f5e2; color: #1a6b3c; }
+    .match-good { background: #fef3d0; color: #8a5700; }
+    .match-explore { background: #ffe8e8; color: #8b2222; }
+    .match-dot { width: 7px; height: 7px; border-radius: 50%; }
+    .match-strong .match-dot { background: #27ae60; }
+    .match-good .match-dot { background: #f0a500; }
+    .match-explore .match-dot { background: #e74c3c; }
+    /* Company / role */
+    .card-company { font-size: 13px; color: var(--muted); font-weight: 500; margin-bottom: 2px; }
+    .card-role { font-size: 18px; font-weight: 700; color: var(--primary); line-height: 1.25; margin-bottom: 12px; }
+    /* Tags row */
+    .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+    .tag {
+      font-size: 11px;
+      padding: 3px 9px;
+      border-radius: 10px;
+      font-weight: 600;
+    }
+    .tag-loc-h { background: #f3eafa; color: var(--haarlem); }
+    .tag-loc-a { background: #e6f4fb; color: var(--amsterdam); }
+    .tag-loc-r { background: #e0f5f5; color: var(--remote); }
+    .tag-eng { background: #e6f9f0; color: #1a6b3c; }
+    .tag-dutch { background: #fff3e0; color: #7a4400; }
+    .tag-industry { background: var(--tag-bg); color: var(--tag-text); }
+    /* Description */
+    .card-desc { font-size: 13.5px; color: #4a5568; line-height: 1.6; margin-bottom: 14px; }
+    /* Why Taylor */
+    .why-box {
+      background: #f8f9ff;
+      border-left: 3px solid var(--accent);
+      border-radius: 0 8px 8px 0;
+      padding: 10px 14px;
+      font-size: 12.5px;
+      color: #374151;
+      margin-bottom: 14px;
+      line-height: 1.55;
+    }
+    .why-label { font-weight: 700; color: var(--accent); font-size: 11px; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 3px; }
+    /* Salary */
+    .salary-row { font-size: 12.5px; color: var(--muted); margin-bottom: 14px; }
+    .salary-row strong { color: var(--text); }
+    /* Card footer */
+    .card-footer {
+      padding: 14px 20px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+    .lang-pill {
+      font-size: 11.5px;
+      padding: 4px 10px;
+      border-radius: 10px;
+      font-weight: 600;
+    }
+    .lang-en { background: #e6f9f0; color: #1a6b3c; }
+    .lang-bilingual { background: #fff3e0; color: #7a4400; }
+    .apply-btn {
+      display: inline-block;
+      padding: 8px 18px;
+      background: var(--accent);
+      color: white;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background 0.15s;
+    }
+    .apply-btn:hover { background: #c96e1a; }
+    .apply-btn.secondary {
+      background: white;
+      color: var(--primary);
+      border: 1.5px solid var(--primary);
+    }
+    .apply-btn.secondary:hover { background: var(--tag-bg); }
+    /* Salary benchmark box */
+    .salary-bench {
+      margin: 0 40px 32px;
+      background: white;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      padding: 20px 28px;
+    }
+    .salary-bench h3 { font-size: 14px; color: var(--primary); font-weight: 700; margin-bottom: 12px; }
+    .bench-row { display: flex; gap: 24px; flex-wrap: wrap; }
+    .bench-item { flex: 1; min-width: 180px; }
+    .bench-title { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 4px; }
+    .bench-range { font-size: 15px; font-weight: 700; color: var(--primary); }
+    .bench-avg { font-size: 12px; color: var(--muted); margin-top: 1px; }
+    .bench-bar { height: 6px; border-radius: 3px; background: #e8edff; margin-top: 6px; overflow: hidden; }
+    .bench-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--accent2), var(--accent)); }
+    /* Job search links section */
+    .search-links {
+      margin: 0 40px 32px;
+      background: white;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      padding: 20px 28px;
+    }
+    .search-links h3 { font-size: 14px; color: var(--primary); font-weight: 700; margin-bottom: 14px; }
+    .link-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+    .search-link-btn {
+      display: block;
+      padding: 10px 16px;
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--primary);
+      text-decoration: none;
+      transition: all 0.15s;
+    }
+    .search-link-btn:hover { border-color: var(--accent); color: var(--accent); background: #fff8f2; }
+    .search-link-sub { font-size: 11px; color: var(--muted); font-weight: 400; }
+    /* Section label */
+    .section-label {
+      padding: 8px 40px 0;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      margin-bottom: 16px;
+    }
+    .no-results {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+      font-size: 15px;
+    }
+    /* Legend */
+    .legend {
+      padding: 0 40px 4px;
+      display: flex; gap: 20px; flex-wrap: wrap; align-items: center;
+    }
+    .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+  </style>
+</head>
+<body>
+
+<!-- ══════════ HEADER ══════════ -->
+<div class="header">
+  <h1>Job Opportunity Dashboard — <span>Taylor Prince</span></h1>
+  <div class="header-meta">
+    <div class="meta-pill">🎯 <strong>Target Level:</strong> Account Director / Senior Account Manager</div>
+    <div class="meta-pill">📍 <strong>Priority:</strong> Haarlem → Amsterdam</div>
+    <div class="meta-pill">🌐 <strong>Language:</strong> English fluent · Dutch beginner</div>
+    <div class="meta-pill">💼 <strong>Experience:</strong> 15+ years · Agency &amp; Healthcare</div>
+    <div class="meta-pill">📅 <strong>Generated:</strong> April 8, 2026</div>
+  </div>
+</div>
+
+<!-- ══════════ SUMMARY BAR ══════════ -->
+<div class="summary-bar">
+  <div class="stat-block">
+    <div class="stat-num" id="total-count">26</div>
+    <div class="stat-label">Total Opportunities</div>
+  </div>
+  <div class="divider"></div>
+  <div class="stat-block">
+    <div class="stat-num" style="color:var(--green)">11</div>
+    <div class="stat-label">Strong Match</div>
+  </div>
+  <div class="divider"></div>
+  <div class="stat-block">
+    <div class="stat-num" style="color:var(--yellow)">10</div>
+    <div class="stat-label">Good Match</div>
+  </div>
+  <div class="divider"></div>
+  <div class="stat-block">
+    <div class="stat-num" style="color:var(--red)">5</div>
+    <div class="stat-label">Exploratory</div>
+  </div>
+  <div class="divider"></div>
+  <div class="stat-block">
+    <div class="stat-num" style="color:var(--haarlem)">4</div>
+    <div class="stat-label">Haarlem Area</div>
+  </div>
+  <div class="divider"></div>
+  <div class="stat-block">
+    <div class="stat-num" style="color:var(--amsterdam)">14</div>
+    <div class="stat-label">Amsterdam</div>
+  </div>
+  <div class="divider"></div>
+  <div class="stat-block">
+    <div class="stat-num" style="color:var(--remote)">8</div>
+    <div class="stat-label">Remote / Global</div>
+  </div>
+</div>
+
+<!-- ══════════ FILTERS ══════════ -->
+<div class="filters">
+  <span class="filter-label">Filter:</span>
+  <button class="filter-btn active" onclick="filterCards('all', this)">All</button>
+  <div class="filter-sep"></div>
+  <button class="filter-btn" onclick="filterCards('loc-haarlem', this)">📍 Haarlem</button>
+  <button class="filter-btn" onclick="filterCards('loc-amsterdam', this)">📍 Amsterdam</button>
+  <div class="filter-sep"></div>
+  <button class="filter-btn" onclick="filterCards('match-strong', this)">🟢 Strong Match</button>
+  <button class="filter-btn" onclick="filterCards('match-good', this)">🟡 Good Match</button>
+  <button class="filter-btn" onclick="filterCards('match-explore', this)">🔴 Exploratory</button>
+  <div class="filter-sep"></div>
+  <button class="filter-btn" onclick="filterCards('eng-only', this)">🌐 English-Friendly</button>
+  <button class="filter-btn" onclick="filterCards('type-agency', this)">🏢 Ad Agency</button>
+  <button class="filter-btn" onclick="filterCards('type-health', this)">🏥 Healthcare Mktg</button>
+  <button class="filter-btn" onclick="filterCards('type-digital', this)">💻 Digital/Social</button>
+  <button class="filter-btn" onclick="filterCards('type-inhouse', this)">🏛 In-House Brand</button>
+  <div class="filter-sep"></div>
+  <button class="filter-btn" onclick="filterCards('loc-remote', this)">🌍 Remote / Global</button>
+</div>
+
+<!-- ══════════ LEGEND ══════════ -->
+<div class="legend">
+  <span class="legend-item"><span class="legend-dot" style="background:var(--haarlem)"></span>Haarlem</span>
+  <span class="legend-item"><span class="legend-dot" style="background:var(--amsterdam)"></span>Amsterdam</span>
+  <span class="legend-item"><span class="legend-dot" style="background:var(--remote)"></span>Remote / Global</span>
+</div>
+
+<!-- ══════════ CARDS ══════════ -->
+<div class="section-label">Curated Opportunities</div>
+<div class="grid" id="card-grid">
+
+  <!-- 1. Ogilvy Amsterdam – Account Manager -->
+  <div class="card loc-amsterdam type-agency match-strong eng-only" data-tags="type-agency match-strong loc-amsterdam eng-only">
+    <div class="card-stripe"></div>
+    <div class="card-body">
+      <div class="match-badge match-strong"><span class="match-dot"></span>Strong Match</div>
+      <div class="card-company">Ogilvy Amsterdam</div>
+      <div class="card-role">Account Manager</div>
+      <div class="tags">
+        <span class="tag tag-loc-a">Amsterdam</span>
+        <span class="tag tag-eng">English OK</span>
+        <span class="tag tag-industry">Ad Agency</span>
+        <span class="tag tag-industry">Integrated</span>
+      </div>
+      <div class="card-desc">Lead day-to-day management of regional and international brand accounts. Coordinate online, offline, and social campaigns from briefing to delivery including budget and planning oversight. One of the most iconic global agency networks — clients include IKEA, Philips, Allianz, and Unilever.</div>
+      <div class="why-box">
+        <div class="why-label">Why Taylor</div>
+        Account Director experience at Balcom (Kubota, Smith+Nephew) and Hawkeye (USAA) maps directly to this. 15+ years of client-facing campaign delivery at integrated agencies is exactly what Ogilvy's Amsterdam team needs. Her CRM, HubSpot, and FullStory background is a bonus.
+      </div>
+      <div class="salary-row">💰 Est. range: <strong>€55,000 – €80,000</strong> · hybrid working offered</div>
+    </div>
+    <div class="card-footer">
+      <span class="lang-pill lang-en">🌐 English Working Environment</span>
+      <a class="apply-btn" href="https://www.ogilvy.com/careers" target="_blank">View at Ogilvy →</a>
+    </div>
+  </div>
+
+  <!-- 2. Mindshare Amsterdam – Account Manager Digital (Nike) -->
+  <div class="card loc-amsterdam type-agency match-strong eng-only" data-tags="type-agency match-strong loc-amsterdam eng-only">
+    <div class="card-stripe"></div>
+    <div class="card-body">
+      <div class="match-badge match-strong"><span class="match-dot"></span>Strong Match</div>
+      <div class="card-company">Mindshare Amsterdam (GroupM)</div>
+      <div class="card-role">Account Manager, Digital — Nike EMEA</div>
+      <div class="tags">
+        <span class="tag tag-loc-a">Amsterdam</span>
+        <span class="tag tag-eng">English OK</span>
+        <span class="tag tag-industry">Media Agency</span>
+        <span class="tag tag-industry">Nike EMEA</span>
+      </div>
+      <div class="card-desc">Lead the Exchange team supporting Nike's Paid Social campaigns across EMEA. Manage media plans across all channels, upload to Nike's Plan Management System, handle PO and budget management, and coordinate production calls. Reports to Senior Account Director.</div>
+      <div class="why-box">
+        <div class="why-label">Why Taylor</div>
+        Her shopper marketing work on Intel at Arc Worldwide (Rocket Lake launch, Amazon/Costco storefronts) and her HubSpot/digital CRM background translate well. Nike EMEA is a global prestige account — this is a career-building opportunity. English is the working language.
+      </div>
+      <div class="salary-row">💰 Est. range: <strong>€50,000 – €75,000</strong> · GroupM benefits</div>
+    </div>
+    <div class="card-footer">
+      <span class="lang-pill lang-en">🌐 English Required</span>
+      <a class="apply-btn" href="https://www.mindshareworld.com/careers/account-manager-paid-social" target="_blank">Apply Now →</a>
+    </div>
+  </div>
+
+  <!-- 3. Mindshare – Planning Account Director (Nike FTC) -->
+  <div class="card loc-amsterdam type-agency match-strong eng-only" data-tags="type-agency match-strong loc-amsterdam eng-only">
+    <div class="card-stripe"></div>
+    <div class="card-body">
+      <div class="match-badge match-strong"><span class="match-dot"></span>Strong Match</div>
+      <div class="card-company">Mindshare Amsterdam (GroupM)</div>
+      <div class="card-role">Planning Account Director &amp; Nike Retail Lead (FTC)</div>
+      <div class="tags">
+        <span class="tag tag-loc-a">Amsterdam</span>
+        <span class="tag tag-eng">English OK</span>
+        <span class="tag tag-industry">Media Agency</span>
+        <span class="tag tag-industry">Director Level</span>
+      </div>
+      <div class="card-desc">Fixed-term contract (FTC) director-level role leading Nike's retail media planning across EMEA. Strategic oversight of planning frameworks and retail channel activations. High-visibility role in a world-class global media agency.</div>
+      <div class="why-box">
+        <div class="why-label">Why Taylor</div>
+        At Account Director level with 4+ years at Balcom and previous AD experience at Hawkeye, this FTC is a natural fit. Retailer experience (Arc Worldwide / Costco / Amazon storefronts for Intel) and budget management skills are directly relevant.
+      </div>
+      <div class="salary-row">💰 Est. range: <strong>€75,000 – €105,000</strong> · FTC contract</div>
+    </div>
+    <div class="card-footer">
+      <span class="lang-pill lang-en">🌐 English Required</span>
+      <a class="apply-btn" href="https://jobs.jobvite.com/groupm-emea/job/oDNMjfwf" target="_blank">Apply Now →</a>
+    </div>
+  </div>
+
+  <!-- 4. DEPT Agency Amsterdam -->
+  <div class="card loc-amsterdam type-digital match-strong eng-only" data-tags="type-digital match-strong loc-amsterdam eng-only">
+    <div class="card-stripe"></div>
+    <div class="card-body">
+      <div class="match-badge match-strong"><span class="match-dot"></span>Strong Match</div>
+      <div class="card-company">DEPT® Agency</div>
+      <div class="card-role">Account Director / Senior Account Manager</div>
+      <div class="tags">
+        <span class="tag tag-loc-a">Amsterdam</span>
+        <span class="tag tag-eng">English OK</span>
+        <span class="tag tag-industry">Digital Agency</span>
+        <span class="tag tag-industry">Global Network</span>
+      </div>
+      <div class="card-desc">DEPT is one of Europe's fastest-growing digital agencies with 4,000+ specialists across 5 continents. Amsterdam HQ at Houthavens. Their account teams manage global digital campaigns, CRM, content, and integrated brand work. Strongly English-first culture.</div>
+      <div class="why-box">
+        <div class="why-label">Why Taylor</div>
+        Her digital marketing, CRM (HubSpot/FullStory), content strategy, and account management background are a near-perfect match for DEPT's client services model. Multi-industry experience (health, auto, tech, consumer) adds real value.
+      </div>
+      <div class="salary-row">💰 Est. range: <strong>€60,000 – €95,000</strong> · flexible/hybrid</div>
+    </div>
+    <div class="card-footer">
+      <span class="lang-pill lang-en">🌐 English First Culture</span>
+      <a class="apply-btn" href="https://www.deptagency.com/careers/roles/" target="_blank">View Openings →</a>
+    </div>
+  </div>
+
+  <!-- 5. Media.Monks / Monks -->
+  <div class="card loc-amsterdam type-digital match-strong eng-only" data-tags="type-digital match-strong loc-amsterdam eng-only">
+    <div class="card-stripe"></div>
+    <div class="card-body">
+      <div class="match-badge match-strong"><span class="match-dot"></span>Strong Match</div>
+      <div class="card-company">Monks (formerly Media.Monks)</div>
+      <div class="card-role">Account Director – Automotive / Senior Account Manager</div>
+      <div class="tags">
+        <span class="tag tag-loc-a">Amsterdam</span>
+        <span class="tag tag-eng">English OK</span>
+        <span class="tag tag-industry">Digital Production</span>
+        <span class="tag tag-industry">Global</span>
+      </div>
+      <div class="card-desc">Monks is a global content, data, and media powerhouse with HQ in Amsterdam. Known for high-volume, high-quality digital production for global brands. Account Directors manage integrated client relationships across content, data, and paid media disciplines.</div>
+      <div class="why-box">
+        <div class="why-label">Why Taylor</div>
+        Her experience managing photo/video shoots, digital content development, and CRM execution at Balcom (Smith+Nephew) and Arc Worldwide (Intel) maps directly. The Account Director – Automotive listing aligns with her Fiat Chrysler experience at Hawkeye.
+      </div>
+      <div class="salary-row">💰 Est. range: <strong>€65,000 – €100,000</strong></div>
+    </div>
+    <div class="card-footer">
+      <span class="lang-pill lang-en">🌐 English First Culture</span>
+      <a class="apply-btn" href="https://www.monks.com/careers/office/amsterdam" target="_blank">View Openings →</a>
+    </div>
+  </div>
+
+  <!-- 6. Havas Health & You / Healthcare Marketing -->
+  <div class="card loc-amsterdam type-health match-strong eng-only" data-tags="type-health match-strong loc-amsterdam eng-only">
+    <div class="card-stripe"></div>
+    <div class="card-body">
+      <div class="match-badge match-strong"><span class="match-dot"></span>Strong Match</div>
+      <div class="card-company">Havas Health &amp; You / Health Agencies Amsterdam</div>
+      <div class="card-role">Account Director – Healthcare / Pharma Marketing</div>
+      <div class="tags">
+        <span class="tag tag-loc-a">Amsterdam</span>
+        <span class="tag tag-eng">English OK</span>
+        <span class="tag tag-industry">Healthcare Mktg</span>
+        <span class="tag tag-industry">Pharma</span>
+      </div>
+      <div class="card-desc">Healthcare-specialist agencies in Amsterdam (Havas Health, McCann Health, Sudler, Palio/McCann) managing pharma and medtech brand accounts. These agencies commonly work in English and serve global clients. Amsterdam is a European hub for pharma/healthcare HQs.</div>
+      <div class="why-box">
+        <div class="why-label">Why Taylor</div>
+        Her most recent role at Avalere Health as Account Director, plus 4+ years managing Smith+Nephew wound care (Tissue, Devices, Biologics, Care/Prevention) at Balcom, gives her rare healthcare agency credentials. This is one of her strongest differentiators in the NL market.
+      </div>
+      <div class="salary-row">💰 Est. range: <strong>€65,000 – €110,000</strong> · healthcare agencies often pay premium</div>
+    </div>
+    <div class="card-footer">
+      <span class="lang-pill lang-en">🌐 English Working Environment</span>
+      <a class="apply-btn" href="https://havashealthandyou.com/careers/" target="_blank">Havas Health Careers →</a>
+    </div>
+  </div>
+
+  <!-- 7. Wieden+Kennedy Amsterdam -->
+  <div class="card loc-amsterdam type-agency match-strong eng-only" data-tags="type-agency match-strong loc-amsterdam eng-only">
+    <div class="card-stripe"></div>
+    <div class="card-body">
+      <div class="match-badge match-strong"><span class="match-dot"></span>Strong Match</div>
+      <div class="card-company">Wieden+Kennedy Amsterdam</div>
+      <div class="card-role">Account / Client Services (Open Application)</div>
+      <div class="tags">
+        <span class="tag tag-loc-a">Amsterdam</span>
+        <span class="tag tag-eng">English OK</span>
+        <span class="tag tag-industry">Creative Agency</span>
+        <span class="tag tag-industry">Iconic</span>
+      </div>
+      <div class="card-desc">One of Europe's most awarded independent creative agencies. Clients include Nike, Samsung, Heineken, Uber. Small but elite — they don't always post roles publicly. W+K is actively English-speaking and highly international. No current listing, but open applications are welcomed.</div>
+      <div class="why-box">
+        <div class="why-label">Why Taylor</div>
+        Her Nike ecosystem experience (Intel gaming at Arc, and indirect brand adjacency), strong creative agency background, and entrepreneurial energy align with W+K's culture. As an American with a strong agency CV, she's the exact talent profile they recruit internationally.
+      </div>
+      <div class="salary-row">💰 Est. range: <strong>€70,000 – €110,000</strong> · prestige agency premium</div>
+    </div>
+    <div class="card-footer">
+      <span class="lang-pill lang-en">🌐 English Only Agency</span>
+      <a class="apply-btn secondary" href="https://wkams.com/about/" target="_blank">Open Application →</a>
+    </div>
+  </div>
+
+  <!-- 8. Crocodile Agency – Senior Account Manager -->
+  <div class="card loc-amsterdam type-agency match-good eng-only" data-tags="type-agency match-good loc-amsterdam eng-only">
+    <div class="card-stripe"></div>
+    <div class="card-body">
+      <div class="match-badge match-good"><span class="match-dot"></span>Good Match</div>
+      <div class="card-company">Crocodile Agency</div>
+      <div class="card-role">Senior Account Manager</div>
+      <div class="tags">
+        <span class="tag tag-loc-a">Amsterdam</span>
+        <span class="tag tag-industry">Culture Agency</span>
+        <span class="tag tag-industry">Creative</span>
+      </div>
+      <div class="card-desc">Crocodile connects brands with culture — music, sports, entertainment and social. Senior Account Manager is the connecting link between client and internal team. They are actively seeking someone energized by new challenges and building strong, sustainable client relationships.</div>
+      <div class="why-box">
+        <div class="why-label">Why Taylor</div>
+        Her entertainment/music background (TOGA Entertainment, Naxos, E-Heart Records) combined with brand account management experience makes her uniquely suited. This is a culture agency — her breadth is a genuine asset here.
+      </div>
+      <div class="salary-row">💰 Est. range: <strong>€50,000 – €70,000</strong></div>
+    </div>
+    <div class="card-footer">
+      <span class="lang-pill lang-bilingual">⚠️ May require some Dutch</span>
+      <a class="apply-btn" href="https://crocodile.global/jobs/" target="_blank">View Openings →</a>
+    </div>
+  </div>
+
+  <!-- 9. TBWA\NEBOKO -->
+  <div class="card loc-amsterdam type-agency match-good" data-tags="type-agency match-good loc-amsterdam">
+    <div class="card-stripe"></div>
+    <div class="card-body">
+      <div class="match-badge match-good"><span class="match-dot"></span>Good Match</div>
+      <div class="card-company">TBWA\NEBOKO</div>
+      <div class="card-role">Account / Client Services (Open Application)</div>
+      <div class="tags">
+        <span class="tag tag-loc-a">Amsterdam</span>
+        <span class="tag tag-industry">Ad Agency</span>
+        <span class="tag tag-industry">150+ people</span>
+      </div>
+      <div class="card-desc">TBWA is "The Disruption Company" — 150+ people in Amsterdam, part of the global TBWA network (11,300 in 97 countries). Clients include Heineken, Albert Heijn, McDonald's. No active listing at time of research, but open applications welcomed via their Homerun portal.</div>
+      <div class="why-box">
+        <div class="why-label">Why Taylor</div>
+        TBWA's disruption-focused culture matches her entrepreneurial background and her non-profit/cause marketing experience. Her Fiat Chrysler and Samsung work gives her the big-brand agency credibility this agency looks for.
+      </div>
+      <div class="salary-row">💰 Est. range: <strong>€60,000 – €100,000</strong></div>
+    </div>
+    <div class="card-footer">
+      <span class="lang-pill lang-bilingual">⚠️ Some Dutch beneficial</span>
+      <a class="apply-btn secondary" href="https://tbwaneboko.homerun.co/open-application" target="_blank">Open Application →</a>
+    </div>
+  </div>
+
+  <!-- 10. DDB Amsterdam -->
+  <div class="card loc-amsterdam type-agency match-good" data-tags="type-agency match-good loc-amsterdam">
+    <div class="card-stripe"></div>
+    <div class="card-body">
+      <div class="match-badge match-good"><span class="match-dot"></span>Good Match</div>
+      <div class="card-company">DDB Amsterdam</div>
+      <div class="card-role">Account / Client Services (Open Application)</div>
+      <div class="tags">
+        <span class="tag tag-loc-a">Amsterdam</span>
+        <span class="tag tag-industry">Ad Agency</span>
+        <span class="tag tag-industry">Global Network</span>
+      </div>
+      <div class="card-desc">DDB Amsterdam is award-winning — Cannes Lions, Effie, Eurobest — with iconic work for KLM and Dutch national brands. Part of Omnicom Group. No current listings on public job boards, but they hire experienced account professionals regularly. Direct outreach is advised.</div>
+      <div class="why-box">
+        <div class="why-label">Why Taylor</div>
+        Her 15-year trajectory from Account Executive → Account Director mirrors exactly the DDB career pathway. Her work on USAA (Financial) and Smith+Nephew (Healthcare) shows she can handle DDB's institutional and CPG clients.
+      </div>
+      <div class="salary-row">💰 Est. range: <strong>€60,000 – €95,000</strong></div>
+    </div>
+    <div class="card-footer">
+      <span class="lang-pill lang-bilingual">⚠️ Some Dutch beneficial</span>
+      <a class="apply-btn secondary" href="https://www.linkedin.com/company/ddbamsterdam/" target="_blank">Find on LinkedIn →</a>
+    </div>
+  </div>
+
+  <!-- 11. Boomerang Agency (Publicis) -->
+  <div class="card loc-amsterdam type-digital match-good eng-only" data-tags="type-digital match-good loc-amsterdam eng-only">
+    <div class="card-stripe"></div>
+    <div class="card-body">
+      <div class="match-badge match-good"><span class="match-dot"></span>Good Match</div>
+      <div class="card-company">Boomerang Agency (Publicis Groupe)</div>
+      <div class="card-role">Account / Social Creative Production</div>
+      <div class="tags">
+        <span class="tag tag-loc-a">Amsterdam Noord</span>
+        <span class="tag tag-eng">English OK</span>
+        <span class="tag tag-industry">Social/Content</span>
+        <span class="tag tag-industry">Publicis</span>
+      </div>
+      <div class="card-desc">Social and creative digital production agency acquired by Publicis Groupe in 2021. In-house creatives, filmmakers, copywriters, and influencer teams. Part of the Publicis network gives access to "Work Your World" — 6 weeks remote from any Publicis country.</div>
+      <div class="why-box">
+        <div class="why-label">Why Taylor</div>
+        Her social media marketing roots (Social Deviants, Point 3 Media, Naxos) combined with her production experience (photo/video shoots at Balcom, Arc) match this agency's output model well. Publicis affiliation is a strong career platform in NL.
+      </div>
+      <div class="salary-row">💰 Est. range: <strong>€50,000 – €80,000</strong></div>
+    </div>
+    <div class="card-footer">
+      <span class="lang-pill lang-en">🌐 English OK (Publicis group)</span>
+      <a class="apply-btn secondary" href="mailto:careers@publicisgroupe.nl">Send CV Directly →</a>
+    </div>
+  </div>
+
+  <!-- 12. Dorst & Lesser -->
+  <div class="card loc-amsterdam type-digital match-good" data-tags="type-digital match-good loc-amsterdam">
+    <div class="card-stripe"></div>
+    <div class="card-body">
+      <div class="match-badge match-good"><span class="match-dot"></span>Good Match</div>
+      <div class="card-company">Dorst &amp; Lesser</div>
+      <div class="card-role">Project Manager / Account (Social Media Focus)</div>
+      <div class="tags">
+        <span class="tag tag-loc-a">Amsterdam</span>
+        <span class="tag tag-industry">Social Media Agency</span>
+        <span class="tag tag-industry">Always-On</span>
+      </div>
+      <div class="card-desc">Leading social media and content agency near Vondelpark. Active vacancy for a project manager with account skills — complete project management of social campaigns and always-on programs, plus account handling. Email Annette Aniba directly.</div>
+      <div class="why-box">
+        <div class="why-label">Why Taylor</div>
+        Her decade+ in social media marketing (Naxos, Point 3 Media, Social Deviants, plus CRM at Balcom) makes this a natural fit. The combined project management + account role plays to her dual strengths.
+      </div>
+      <div class="salary-row">💰 Est. range: <strong>€45,000 – €65,000</strong> · boutique agency</div>
+    </div>
+    <div class="card-footer">
+      <span class="lang-pill lang-bilingual">⚠️ Dutch may be helpful</span>
+      <a class="apply-btn" href="mailto:annette.aniba@dorstenlesser.nl">Email Annette →</a>
+    </div>
+  </div>
+
+  <!-- 13. Styles Concepts Haarlem -->
+  <div class="card loc-haarlem type-agency match-good" data-tags="type-agency match-good loc-haarlem">
+    <div class="card-stripe"></div>
+    <div class="card-body">
+      <div class="match-badge match-good"><span class="match-dot"></span>Good Match</div>
+      <div class="card-company">Styles Concepts</div>
+      <div class="card-role">Account / Brand Activation (Open Application)</div>
+      <div class="tags">
+        <span class="tag tag-loc-h">Haarlem</span>
+        <span class="tag tag-industry">Events/Activation</span>
+        <span class="tag tag-industry">Brand</span>
+      </div>
+      <div class="card-desc">Haarlem-based brand activation and events agency with 20+ years of experience. Full-service team handling concept, design, production, staffing, and logistics. Impressive client roster: Lotus Cars, Radio Veronica, De Nederlandse Loterij, LeasePlan, L'Oréal. Local proximity is a key advantage.</div>
+      <div class="why-box">
+        <div class="why-label">Why Taylor</div>
+        Her event planning background (Nashville Wine Auction, music industry events) and BTL experience (Samsung at Ignite Partnership) align with Styles Concepts' activation model. Being based in Haarlem is a major practical advantage.
+      </div>
+      <div class="salary-row">💰 Est. range: <strong>€45,000 – €70,000</strong></div>
+    </div>
+    <div class="card-footer">
+      <span class="lang-pill lang-bilingual">⚠️ Some Dutch helpful</span>
+      <a class="apply-btn secondary" href="mailto:info@styles-concepts.nl">Email Directly →</a>
+    </div>
+  </div>
+
+  <!-- 14. Booking.com Amsterdam -->
+  <div class="card loc-amsterdam type-inhouse match-good eng-only" data-tags="type-inhouse match-good loc-amsterdam eng-only">
+    <div class="card-stripe"></div>
+    <div class="card-body">
+      <div class="match-badge match-good"><span class="match-dot"></span>Good Match</div>
+      <div class="card-company">Booking.com</div>
+      <div class="card-role">Senior Marketing / Partnerships Manager</div>
+      <div class="tags">
+        <span class="tag tag-loc-a">Amsterdam</span>
+        <span class="tag tag-eng">English Only</span>
+        <span class="tag tag-industry">In-House Brand</span>
+        <span class="tag tag-industry">Tech/Travel</span>
+      </div>
+      <div class="card-desc">Booking.com HQ is Amsterdam, and they are famously English-only (no Dutch required). Large in-house marketing team across brand, performance, partnerships, and content. One of the best expat employers in the Netherlands with strong international culture.</div>
+      <div class="why-box">
+        <div class="why-label">Why Taylor</div>
+        Her digital marketing, CRM, and content strategy experience transfers well to in-house brand management. For an American with zero Dutch, Booking.com is one of the few Amsterdam employers where the language barrier is a complete non-issue.
+      </div>
+      <div class="salary-row">💰 Est. range: <strong>€65,000 – €100,000</strong> + strong benefits</div>
+    </div>
+    <div class="card-footer">
+      <span class="lang-pill lang-en">🌐 English Only Company</span>
+      <a class="apply-btn" href="https://careers.booking.com/" target="_blank">View Careers →</a>
+    </div>
+  </div>
+
+  <!-- 15. Heineken – Marketing -->
+  <div class="card loc-amsterdam type-inhouse match-explore eng-only" data-tags="type-inhouse match-explore loc-amsterdam eng-only">
+    <div class="card-stripe"></div>
+    <div class="card-body">
+      <div class="match-badge match-explore"><span class="match-dot"></span>Exploratory</div>
+      <div class="card-company">Heineken</div>
+      <div class="card-role">Global Brand / Campaign Manager</div>
+      <div class="tags">
+        <span class="tag tag-loc-a">Amsterdam</span>
+        <span class="tag tag-eng">English OK</span>
+        <span class="tag tag-industry">In-House Brand</span>
+        <span class="tag tag-industry">FMCG/Beverage</span>
+      </div>
+      <div class="card-desc">Heineken's global HQ is in Amsterdam with a large marketing team managing global campaigns, brand partnerships, and agency relationships. English is the working language for international roles. Strong culture brand with prestige global accounts.</div>
+      <div class="why-box">
+        <div class="why-label">Why Taylor</div>
+        Her Sazerac (spirits/beverage) account experience at Hawkeye is a direct industry connection. Her agency-side background gives her the ability to hit the ground running in a client-side role managing agencies. Worth exploring, though competition is high.
+      </div>
+      <div class="salary-row">💰 Est. range: <strong>€70,000 – €110,000</strong></div>
+    </div>
+    <div class="card-footer">
+      <span class="lang-pill lang-en">🌐 English Working Environment</span>
+      <a class="apply-btn secondary" href="https://www.theheinekencompany.com/careers" target="_blank">View Careers →</a>
+    </div>
+  </div>
+
+  <!-- 16. Philips Amsterdam -->
+  <div class="card loc-amsterdam type-inhouse match-explore eng-only" data-tags="type-inhouse match-explore loc-amsterdam eng-only">
+    <div class="card-stripe"></div>
+    <div class="card-body">
+      <div class="match-badge match-explore"><span class="match-dot"></span>Exploratory</div>
+      <div class="card-company">Philips</div>
+      <div class="card-role">Marketing / Category / Brand Manager</div>
+      <div class="tags">
+        <span class="tag tag-loc-a">Amsterdam</span>
+        <span class="tag tag-eng">English OK</span>
+        <span class="tag tag-industry">In-House Brand</span>
+        <span class="tag tag-industry">Healthcare/Tech</span>
+      </div>
+      <div class="card-desc">Philips HQ is Amsterdam with a significant healthcare technology marketing division. English is the working language. The healthcare division (Philips Health Systems) is particularly relevant given Taylor's medtech background.</div>
+      <div class="why-box">
+        <div class="why-label">Why Taylor</div>
+        Her Avalere Health and Smith+Nephew work (medical devices, biologics, wound care) directly aligns with Philips' healthcare marketing needs. This is one of the few in-house roles where her specific healthcare background creates genuine competitive advantage.
+      </div>
+      <div class="salary-row">💰 Est. range: <strong>€65,000 – €100,000</strong></div>
+    </div>
+    <div class="card-footer">
+      <span class="lang-pill lang-en">🌐 English Working Environment</span>
+      <a class="apply-btn secondary" href="https://www.careers.philips.com/" target="_blank">View Careers →</a>
+    </div>
+  </div>
+
+  <!-- 17. Haarlem – General Agency/Marketing -->
+  <div class="card loc-haarlem type-digital match-explore" data-tags="type-digital match-explore loc-haarlem">
+    <div class="card-stripe"></div>
+    <div class="card-body">
+      <div class="match-badge match-explore"><span class="match-dot"></span>Exploratory</div>
+      <div class="card-company">Haarlem Digital/Marketing Agencies (SDIM, Promoguy, Hoogendijk)</div>
+      <div class="card-role">Senior Marketing Strategist / Account Lead</div>
+      <div class="tags">
+        <span class="tag tag-loc-h">Haarlem</span>
+        <span class="tag tag-industry">Digital / Performance</span>
+        <span class="tag tag-industry">SME Agencies</span>
+      </div>
+      <div class="card-desc">Haarlem's local agency ecosystem — SDIM (SEO/marketing), Promoguy (performance/paid), Hoogendijk Media (paid digital) — are smaller but could offer strategic leadership roles, particularly as Taylor builds Dutch language skills. These agencies serve SME clients and international brands based locally.</div>
+      <div class="why-box">
+        <div class="why-label">Why Taylor</div>
+        Proximity advantage — 0 commute. Smaller agencies may value a senior American-trained account director as a prestige hire. These roles could also serve as a "landing pad" while Taylor builds Dutch and local network.
+      </div>
+      <div class="salary-row">💰 Est. range: <strong>€40,000 – €65,000</strong> · smaller agency scale</div>
+    </div>
+    <div class="card-footer">
+      <span class="lang-pill lang-bilingual">⚠️ Some Dutch very helpful</span>
+      <a class="apply-btn secondary" href="https://www.glassdoor.com/Job/haarlem-english-speaking-jobs-SRCH_IL.0,7_IC3064845_KO8,24.htm" target="_blank">Search Haarlem Jobs →</a>
+    </div>
+  </div>
+
+  <!-- 18. McCann Amsterdam / Healthcare -->
+  <div class="card loc-amsterdam type-health match-explore eng-only" data-tags="type-health match-explore loc-amsterdam eng-only">
+    <div class="card-stripe"></div>
+    <div class="card-body">
+      <div class="match-badge match-explore"><span class="match-dot"></span>Exploratory</div>
+      <div class="card-company">McCann Health / Sudler / Palio</div>
+      <div class="card-role">Account Supervisor / Director – Healthcare Marketing</div>
+      <div class="tags">
+        <span class="tag tag-loc-a">Amsterdam</span>
+        <span class="tag tag-eng">English OK</span>
+        <span class="tag tag-industry">Healthcare Mktg</span>
+        <span class="tag tag-industry">Pharma/Biotech</span>
+      </div>
+      <div class="card-desc">Specialist healthcare advertising agencies operating in Amsterdam and the broader Netherlands pharma corridor. These agencies manage ethical pharma, biotech, and medtech brands and work almost exclusively in English. The Netherlands is a major European pharma hub.</div>
+      <div class="why-box">
+        <div class="why-label">Why Taylor</div>
+        Avalere Health Account Director + 4+ years on Smith+Nephew biomedical/wound care gives Taylor rare agency-side healthcare credentials. Healthcare marketing agencies in NL actively seek English-fluent talent with US market insight.
+      </div>
+      <div class="salary-row">💰 Est. range: <strong>€65,000 – €105,000</strong></div>
+    </div>
+    <div class="card-footer">
+      <span class="lang-pill lang-en">🌐 English Working Environment</span>
+      <a class="apply-btn secondary" href="https://www.linkedin.com/jobs/search/?keywords=healthcare+marketing+account+manager&location=Amsterdam+Area" target="_blank">Search LinkedIn →</a>
+    </div>
+  </div>
+
+
+</div><!-- /grid -->
+
+<!-- ══════════ REMOTE SECTION LABEL ══════════ -->
+<div class="section-label" style="margin-top:8px;">🌍 Remote &amp; Global Opportunities — Work From Haarlem</div>
+<div style="padding: 0 40px 12px; font-size:13px; color: var(--muted); max-width: 860px;">
+  These roles are fully remote or remote-eligible in Europe/globally. Taylor's American background, English fluency, and US agency track record are genuine competitive advantages here — especially for US healthcare marketing agencies and globally distributed creative companies.
+</div>
+<div class="grid" id="remote-grid">
+
+  <!-- R1. Avalere Health – Senior Engagement Strategist / Associate Director -->
+  <div class="card loc-remote type-health match-strong eng-only" data-tags="type-health match-strong loc-remote eng-only">
+    <div class="card-stripe"></div>
+    <div class="card-body">
+      <div class="match-badge match-strong"><span class="match-dot"></span>Strong Match</div>
+      <div class="card-company">Avalere Health</div>
+      <div class="card-role">Senior Engagement Strategist / Associate Director</div>
+      <div class="tags">
+        <span class="tag tag-loc-r">🌍 Remote Global</span>
+        <span class="tag tag-eng">English Only</span>
+        <span class="tag tag-industry">Healthcare Mktg</span>
+        <span class="tag tag-industry">Pharma Agency</span>
+      </div>
+      <div class="card-desc">Avalere Health (Taylor's current employer) is a global healthcare marketing agency with city hubs in North America, Europe, and Asia — and fully supported flexible remote working. This Associate Director role requires 8+ years of strategic planning or marketing experience in a healthcare/pharma advertising agency.</div>
+      <div class="why-box">
+        <div class="why-label">Why Taylor</div>
+        She is already an Account Director at Avalere Health. An internal transfer to a remote-eligible European-based role, or an application to a comparable AD-level position, is the most natural bridge of all. Avalere's Europe hubs and remote culture make this directly feasible from Haarlem.
+      </div>
+      <div class="salary-row">💰 Est. range: <strong>$130,000 – $155,000 USD</strong> · remote eligible</div>
+    </div>
+    <div class="card-footer">
+      <span class="lang-pill lang-en">🌐 English Only · Remote Global</span>
+      <a class="apply-btn" href="https://avalerehealth.com/careers/vacancies/" target="_blank">View Openings →</a>
+    </div>
+  </div>
+
+  <!-- R2. Real Chemistry – Account Director, Medical Communications -->
+  <div class="card loc-remote type-health match-strong eng-only" data-tags="type-health match-strong loc-remote eng-only">
+    <div class="card-stripe"></div>
+    <div class="card-body">
+      <div class="match-badge match-strong"><span class="match-dot"></span>Strong Match</div>
+      <div class="card-company">Real Chemistry</div>
+      <div class="card-role">Account Director – Medical Communications</div>
+      <div class="tags">
+        <span class="tag tag-loc-r">🌍 Remote (US-based OK)</span>
+        <span class="tag tag-eng">English Only</span>
+        <span class="tag tag-industry">Healthcare Mktg</span>
+        <span class="tag tag-industry">Med Comms</span>
+      </div>
+      <div class="card-desc">Global healthcare communications and marketing agency (offices in US, UK, Europe). Account Director on the US Medical Affairs team serves as primary client contact and strategic advisor. Listed as "remote within the US" but Real Chemistry has European offices and regional remote teams. Salary $120K–$142.5K USD.</div>
+      <div class="why-box">
+        <div class="why-label">Why Taylor</div>
+        Real Chemistry specifically cites hiring from outside US office cities with quarterly team gatherings. Her Avalere Health and Smith+Nephew medical device background makes her a top candidate. Worth a direct inquiry about EU-based remote eligibility given their European presence.
+      </div>
+      <div class="salary-row">💰 <strong>$120,000 – $142,500 USD</strong> · quarterly in-person team gatherings</div>
+    </div>
+    <div class="card-footer">
+      <span class="lang-pill lang-en">🌐 English Only · Ask about EU Remote</span>
+      <a class="apply-btn" href="https://www.realchemistry.com/careers" target="_blank">View Openings →</a>
+    </div>
+  </div>
+
+  <!-- R3. McCann Health – Account Director (Remote/Global) -->
+  <div class="card loc-remote type-health match-strong eng-only" data-tags="type-health match-strong loc-remote eng-only">
+    <div class="card-stripe"></div>
+    <div class="card-body">
+      <div class="match-badge match-strong"><span class="match-dot"></span>Strong Match</div>
+      <div class="card-company">McCann Health (IPG Health Network)</div>
+      <div class="card-role">Account Director – Healthcare Communications</div>
+      <div class="tags">
+        <span class="tag tag-loc-r">🌍 Remote / London / NYC</span>
+        <span class="tag tag-eng">English Only</span>
+        <span class="tag tag-industry">Healthcare Mktg</span>
+        <span class="tag tag-industry">Global Agency</span>
+      </div>
+      <div class="card-desc">McCann Health is one of the largest global healthcare communications agencies — London HQ, New York, New Jersey, Milan, Tokyo and more. Active Account Director hiring with salary $105K–$145K. The London office is a 2-hour Eurostar from Amsterdam, and McCann Health operates with flexible/remote structures for global roles.</div>
+      <div class="why-box">
+        <div class="why-label">Why Taylor</div>
+        Her healthcare agency credentials (Avalere, Smith+Nephew wound care devices/biologics) are exactly what McCann Health recruits for. Their global structure and London office makes a remote-from-NL arrangement highly negotiable. "Truth Well Told" — their founding philosophy — matches her strategic communications background.
+      </div>
+      <div class="salary-row">💰 <strong>$105,000 – $145,000 USD</strong> · flexible time off (MTO)</div>
+    </div>
+    <div class="card-footer">
+      <span class="lang-pill lang-en">🌐 English Only · Global Agency</span>
+      <a class="apply-btn" href="https://mccannhealthlondon.com/work-with-us" target="_blank">McCann Health London →</a>
+    </div>
+  </div>
+
+  <!-- R4. Publicis Health – Account Director EMEA -->
+  <div class="card loc-remote type-health match-strong eng-only" data-tags="type-health match-strong loc-remote eng-only">
+    <div class="card-stripe"></div>
+    <div class="card-body">
+      <div class="match-badge match-strong"><span class="match-dot"></span>Strong Match</div>
+      <div class="card-company">Publicis Health</div>
+      <div class="card-role">Account Director – EMEA (Healthcare / Pharma)</div>
+      <div class="tags">
+        <span class="tag tag-loc-r">🌍 EMEA Remote</span>
+        <span class="tag tag-eng">English Only</span>
+        <span class="tag tag-industry">Healthcare Mktg</span>
+        <span class="tag tag-industry">8,000+ specialists</span>
+      </div>
+      <div class="card-desc">Publicis Health is the healthcare network of Publicis Groupe — 8,000+ specialists across 40 offices and 11 brands globally. As Taylor already has a Publicis connection via Boomerang Agency (Publicis-owned, Amsterdam), this is a natural internal pathway too. Remote roles across Europe are actively posted.</div>
+      <div class="why-box">
+        <div class="why-label">Why Taylor</div>
+        Avalere Health + Smith+Nephew medical background = strong Publicis Health fit. The Boomerang/Publicis Amsterdam connection could facilitate an introduction. Their "Work Your World" programme (work from any Publicis country 6 weeks/year) also aligns with an international lifestyle.
+      </div>
+      <div class="salary-row">💰 Est. range: <strong>€75,000 – €115,000</strong> · strong benefits package</div>
+    </div>
+    <div class="card-footer">
+      <span class="lang-pill lang-en">🌐 English · EMEA Remote</span>
+      <a class="apply-btn" href="https://careers.publicisgroupe.com/publicishealth/jobs" target="_blank">View Openings →</a>
+    </div>
+  </div>
+
+  <!-- R5. Miles Partnership – Account Director (Remote, Travel/Tourism) -->
+  <div class="card loc-remote type-agency match-good eng-only" data-tags="type-agency match-good loc-remote eng-only">
+    <div class="card-stripe"></div>
+    <div class="card-body">
+      <div class="match-badge match-good"><span class="match-dot"></span>Good Match</div>
+      <div class="card-company">Miles Partnership</div>
+      <div class="card-role">Account Director – Travel / Destination Marketing</div>
+      <div class="tags">
+        <span class="tag tag-loc-r">🌍 Fully Remote</span>
+        <span class="tag tag-eng">English Only</span>
+        <span class="tag tag-industry">Marketing Agency</span>
+        <span class="tag tag-industry">Travel/Tourism</span>
+      </div>
+      <div class="card-desc">US-based destination and travel marketing agency. Fully remote Account Director role listed on Remotive — leads major client relationships and shapes long-term strategic direction across integrated marketing programs. Salary $90K–$100K USD. Manages financial performance, mentors account teams, supports new business.</div>
+      <div class="why-box">
+        <div class="why-label">Why Taylor</div>
+        Fully remote and US-listed — highly likely to accept international/EU-based team members. Her integrated marketing agency experience (Balcom, Hawkeye, GS&F) transfers directly. As an American expat in Europe, she brings useful perspective to destination marketing clients targeting US travelers.
+      </div>
+      <div class="salary-row">💰 <strong>$90,000 – $100,000 USD</strong> · fully remote · Remotive listing</div>
+    </div>
+    <div class="card-footer">
+      <span class="lang-pill lang-en">🌐 Fully Remote — English Only</span>
+      <a class="apply-btn" href="https://remotive.com/remote/jobs/sales-business/account-director-3967946" target="_blank">Apply on Remotive →</a>
+    </div>
+  </div>
+
+  <!-- R6. Stratacomm – Account Director (Remote, Integrated Agency) -->
+  <div class="card loc-remote type-agency match-good eng-only" data-tags="type-agency match-good loc-remote eng-only">
+    <div class="card-stripe"></div>
+    <div class="card-body">
+      <div class="match-badge match-good"><span class="match-dot"></span>Good Match</div>
+      <div class="card-company">Stratacomm LLC</div>
+      <div class="card-role">Account Director – Integrated Agency</div>
+      <div class="tags">
+        <span class="tag tag-loc-r">🌍 Fully Remote</span>
+        <span class="tag tag-eng">English Only</span>
+        <span class="tag tag-industry">PR / Comms Agency</span>
+        <span class="tag tag-industry">7+ yrs req.</span>
+      </div>
+      <div class="card-desc">US-based fully integrated advertising and communications agency with a remote-first culture. Account Director role requires minimum 7 years in client services at a fully integrated agency. Strategic communications, client relationship leadership, and campaign management focus.</div>
+      <div class="why-box">
+        <div class="why-label">Why Taylor</div>
+        Her strategic communications skills (AAF President, Balcom, Hawkeye) and 15+ years in fully integrated agency environments exceed the requirements. Remote-first culture is a genuine fit for working from Haarlem. Her nonprofit/cause marketing background is also relevant to Stratacomm's client mix.
+      </div>
+      <div class="salary-row">💰 Est. range: <strong>$85,000 – $120,000 USD</strong> · remote</div>
+    </div>
+    <div class="card-footer">
+      <span class="lang-pill lang-en">🌐 Fully Remote — English Only</span>
+      <a class="apply-btn" href="https://remotive.com/remote/jobs/marketing/account-director-1209685" target="_blank">Apply on Remotive →</a>
+    </div>
+  </div>
+
+  <!-- R7. Remote Agency Network (WFH / Nomad Boards) -->
+  <div class="card loc-remote type-digital match-good eng-only" data-tags="type-digital match-good loc-remote eng-only">
+    <div class="card-stripe"></div>
+    <div class="card-body">
+      <div class="match-badge match-good"><span class="match-dot"></span>Good Match</div>
+      <div class="card-company">Remote-First Digital Agencies (Various)</div>
+      <div class="card-role">Senior Account Manager / Client Success Director</div>
+      <div class="tags">
+        <span class="tag tag-loc-r">🌍 Fully Remote</span>
+        <span class="tag tag-eng">English Only</span>
+        <span class="tag tag-industry">Digital / Performance</span>
+        <span class="tag tag-industry">SaaS / Tech Clients</span>
+      </div>
+      <div class="card-desc">A growing class of US/UK digital agencies (performance marketing, SEO, content, CRO, paid media) operate fully remote globally. 64+ Account Manager/Director remote roles are currently listed in the Netherlands alone on Remote Rocketship, with 749 across Europe. Strong pipeline for anyone searching actively.</div>
+      <div class="why-box">
+        <div class="why-label">Why Taylor</div>
+        Her HubSpot, digital campaign, CRM, and content management experience is directly transferable to remote digital agency account roles. These agencies often love US-trained talent. Best searched actively on: RemoteRocketship, WeWorkRemotely, Working Nomads, NoDesk, and Dynamite Jobs.
+      </div>
+      <div class="salary-row">💰 Avg remote account exec Europe: <strong>~$92,500 USD</strong> · varies widely</div>
+    </div>
+    <div class="card-footer">
+      <span class="lang-pill lang-en">🌐 Fully Remote — English Only</span>
+      <a class="apply-btn" href="https://www.remoterocketship.com/country/netherlands/jobs/account-manager/" target="_blank">Search RemoteRocketship →</a>
+    </div>
+  </div>
+
+  <!-- R8. WPP / Ogilvy Global Remote Roles -->
+  <div class="card loc-remote type-agency match-explore eng-only" data-tags="type-agency match-explore loc-remote eng-only">
+    <div class="card-stripe"></div>
+    <div class="card-body">
+      <div class="match-badge match-explore"><span class="match-dot"></span>Exploratory</div>
+      <div class="card-company">WPP Global (Ogilvy · Grey · VML · AKQA)</div>
+      <div class="card-role">Account Director – Global / EMEA Remote</div>
+      <div class="tags">
+        <span class="tag tag-loc-r">🌍 EMEA / Remote</span>
+        <span class="tag tag-eng">English Only</span>
+        <span class="tag tag-industry">Ad Agency Network</span>
+        <span class="tag tag-industry">WPP</span>
+      </div>
+      <div class="card-desc">WPP is restructuring in 2026 (Ogilvy + VML + AKQA + Burson merging into "WPP Creative"), which typically opens a wave of new senior account roles. WPP's global network operates EMEA-wide, often with remote or hybrid options for senior account management. Amsterdam is already a major WPP hub.</div>
+      <div class="why-box">
+        <div class="why-label">Why Taylor</div>
+        The WPP restructure creates opportunity noise — new consolidated teams often need experienced account directors to fill senior client-facing roles quickly. Her multi-industry, multi-agency background across 15 years is exactly the senior profile WPP needs for its new unified structure.
+      </div>
+      <div class="salary-row">💰 Est. range: <strong>€70,000 – €110,000</strong> · varies by brand/team</div>
+    </div>
+    <div class="card-footer">
+      <span class="lang-pill lang-en">🌐 English · EMEA scope</span>
+      <a class="apply-btn secondary" href="https://www.publicisgroupe.com/en/the-groupe/careers/job-opportunities" target="_blank">WPP Careers →</a>
+    </div>
+  </div>
+
+</div><!-- /remote-grid -->
+
+<!-- ══════════ SALARY BENCHMARK ══════════ -->
+<div class="salary-bench">
+  <h3>📊 Salary Benchmarks — Netherlands 2026 (Account Management / Agency)</h3>
+  <div class="bench-row">
+    <div class="bench-item">
+      <div class="bench-title">Account Manager (3–7 yrs)</div>
+      <div class="bench-range">€45,000 – €72,000</div>
+      <div class="bench-avg">Average: ~€57,000</div>
+      <div class="bench-bar"><div class="bench-fill" style="width:40%"></div></div>
+    </div>
+    <div class="bench-item">
+      <div class="bench-title">Senior Account Manager (7–12 yrs)</div>
+      <div class="bench-range">€60,000 – €90,000</div>
+      <div class="bench-avg">Average: ~€73,000</div>
+      <div class="bench-bar"><div class="bench-fill" style="width:60%"></div></div>
+    </div>
+    <div class="bench-item">
+      <div class="bench-title">Account Director (10+ yrs)</div>
+      <div class="bench-range">€75,000 – €120,000</div>
+      <div class="bench-avg">Average: ~€95,000 · Glassdoor 2026</div>
+      <div class="bench-bar"><div class="bench-fill" style="width:78%"></div></div>
+    </div>
+    <div class="bench-item">
+      <div class="bench-title">Healthcare/Pharma Premium</div>
+      <div class="bench-range">+10–20% above standard</div>
+      <div class="bench-avg">Specialist knowledge commands premium</div>
+      <div class="bench-bar"><div class="bench-fill" style="width:85%"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ QUICK SEARCH LINKS ══════════ -->
+<div class="search-links">
+  <h3>🔍 Live Job Search — Use These Links to Find New Openings</h3>
+  <div class="link-grid">
+    <a class="search-link-btn" href="https://www.linkedin.com/jobs/search/?keywords=account+director&location=Amsterdam+Area" target="_blank">
+      LinkedIn<br><span class="search-link-sub">Account Director · Amsterdam</span>
+    </a>
+    <a class="search-link-btn" href="https://www.linkedin.com/jobs/search/?keywords=senior+account+manager+agency&location=Amsterdam+Area" target="_blank">
+      LinkedIn<br><span class="search-link-sub">Sr. Account Manager · Agency</span>
+    </a>
+    <a class="search-link-btn" href="https://www.linkedin.com/jobs/search/?keywords=account+manager+english&location=Haarlem,+Netherlands" target="_blank">
+      LinkedIn<br><span class="search-link-sub">Account Manager · Haarlem</span>
+    </a>
+    <a class="search-link-btn" href="https://nl.indeed.com/jobs?q=account+director+agency&l=Amsterdam&lang=en" target="_blank">
+      Indeed NL<br><span class="search-link-sub">Account Director · Agency</span>
+    </a>
+    <a class="search-link-btn" href="https://www.michaelpage.nl/en/jobs/account-manager/amsterdam" target="_blank">
+      Michael Page NL<br><span class="search-link-sub">Account Manager · Amsterdam</span>
+    </a>
+    <a class="search-link-btn" href="https://www.glassdoor.com/Job/amsterdam-advertising-account-manager-jobs-SRCH_IL.0,9_IC3064478_KO10,37.htm" target="_blank">
+      Glassdoor<br><span class="search-link-sub">Advertising Account Mgr · AMS</span>
+    </a>
+    <a class="search-link-btn" href="https://englishjobsearch.nl/jobs/marketing" target="_blank">
+      EnglishJobSearch.nl<br><span class="search-link-sub">Marketing · English-only listings</span>
+    </a>
+    <a class="search-link-btn" href="https://www.linkedin.com/jobs/search/?keywords=healthcare+marketing+account&location=Amsterdam+Area" target="_blank">
+      LinkedIn<br><span class="search-link-sub">Healthcare Marketing · AMS</span>
+    </a>
+    <a class="search-link-btn" href="https://vacaturesinfarma.nl/en/tag/sales-commercial/marketing" target="_blank">
+      VacaturesInFarma.nl<br><span class="search-link-sub">Pharma Marketing · NL</span>
+    </a>
+    <a class="search-link-btn" href="https://wpp.careersitecloud.com/amsterdam" target="_blank">
+      WPP Careers<br><span class="search-link-sub">Ogilvy / Grey / other WPP · AMS</span>
+    </a>
+  </div>
+  <div style="margin-top:18px; padding-top:16px; border-top:1px solid var(--border);">
+    <div style="font-size:13px; font-weight:700; color:var(--remote); margin-bottom:12px;">🌍 Remote-Specific Job Boards</div>
+    <div class="link-grid">
+      <a class="search-link-btn" href="https://www.remoterocketship.com/country/netherlands/jobs/account-manager/" target="_blank">
+        RemoteRocketship<br><span class="search-link-sub">Account Manager · Netherlands</span>
+      </a>
+      <a class="search-link-btn" href="https://weworkremotely.com/remote-jobs-marketing" target="_blank">
+        WeWorkRemotely<br><span class="search-link-sub">Remote Marketing Jobs</span>
+      </a>
+      <a class="search-link-btn" href="https://remotive.com/remote/jobs/marketing" target="_blank">
+        Remotive<br><span class="search-link-sub">Remote Marketing / Account</span>
+      </a>
+      <a class="search-link-btn" href="https://dynamitejobs.com/country/remote-jobs-in-netherlands" target="_blank">
+        Dynamite Jobs<br><span class="search-link-sub">Remote Jobs · Netherlands</span>
+      </a>
+      <a class="search-link-btn" href="https://nodesk.co/remote-jobs/account-manager/" target="_blank">
+        NoDesk<br><span class="search-link-sub">Remote Account Manager</span>
+      </a>
+      <a class="search-link-btn" href="https://www.workingnomads.com/remote-account-manager-jobs" target="_blank">
+        Working Nomads<br><span class="search-link-sub">Remote Account Manager</span>
+      </a>
+      <a class="search-link-btn" href="https://remoteineurope.com/categories/marketing" target="_blank">
+        RemoteInEurope<br><span class="search-link-sub">Marketing · Europe-based roles</span>
+      </a>
+      <a class="search-link-btn" href="https://www.europharmajobs.com/jobs/remote" target="_blank">
+        EuroPharmajobs<br><span class="search-link-sub">Remote Pharma / Health · EU</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ JS ══════════ -->
+<script>
+  function filterCards(filter, btn) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    const allCards = document.querySelectorAll('#card-grid .card, #remote-grid .card');
+    let visible = 0;
+
+    allCards.forEach(card => {
+      if (filter === 'all') {
+        card.classList.remove('hidden');
+        visible++;
+      } else {
+        const tags = card.dataset.tags || '';
+        if (tags.includes(filter)) {
+          card.classList.remove('hidden');
+          visible++;
+        } else {
+          card.classList.add('hidden');
+        }
+      }
+    });
+
+    document.getElementById('total-count').textContent = visible;
+
+    // Show/hide remote section label depending on whether remote cards are visible
+    const remoteGrid = document.getElementById('remote-grid');
+    const remoteSection = remoteGrid ? remoteGrid.previousElementSibling : null;
+    const remoteNote = remoteSection ? remoteSection.previousElementSibling : null;
+    const remoteLabel = remoteNote ? remoteNote.previousElementSibling : null;
+
+    const anyRemoteVisible = [...document.querySelectorAll('#remote-grid .card')].some(c => !c.classList.contains('hidden'));
+    if (remoteGrid) remoteGrid.style.display = anyRemoteVisible ? '' : 'none';
+
+    let noResults = document.querySelector('.no-results');
+    if (visible === 0) {
+      if (!noResults) {
+        noResults = document.createElement('div');
+        noResults.className = 'no-results';
+        noResults.textContent = 'No opportunities match this filter. Try another.';
+        document.getElementById('card-grid').appendChild(noResults);
+      }
+    } else {
+      if (noResults) noResults.remove();
+    }
+  }
+</script>
+
+</body>
+</html>
